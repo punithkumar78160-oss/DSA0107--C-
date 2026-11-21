@@ -1,0 +1,24 @@
+Compile command: g++ -std=c++17 -Wall -Wextra Q6.cpp -o program
+Compile exit: 0
+Diagnostics:
+None
+Run exit: 0
+Observed output:
+Bicycle B-101 daily=Rs 100 status=Rented
+Charge for 2 days: Rs 200
+TwoWheeler T-202 daily=Rs 250 status=Rented
+Charge for 2 days: Rs 550
+Car C-303 daily=Rs 1200 status=Rented
+Charge for 2 days: Rs 2500
+ElectricCar E-404 daily=Rs 1500 status=Rented
+Charge for 2 days: Rs 3120
+ElectricBus EB-505 daily=Rs 3000 status=Rented
+Charge for 2 days: Rs 6560
+Late return charge (2 late days) for first vehicle: Rs 300
+Bicycle B-101 daily=Rs 100 status=Available
+TwoWheeler T-202 daily=Rs 250 status=Available
+Car C-303 daily=Rs 1200 status=Available
+ElectricCar E-404 daily=Rs 1500 status=Available
+ElectricBus EB-505 daily=Rs 3000 status=Available
+
+Add a screenshot after rerunning locally.
