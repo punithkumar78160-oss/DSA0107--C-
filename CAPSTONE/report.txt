@@ -1,0 +1,13 @@
+==========================================
+   BUS PASS AUTOMATION SYSTEM - REPORT    
+==========================================
+Generated Date: 2026-11-21
+
+Total passes : 8
+Active       : 6
+Expired      : 2
+Expiring Soon: 1
+Revenue      : Rs. 2900.00
+------------------------------------------
+Report saved to report.txt
+==========================================

@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bus Pass Automation System - Live Working Model</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body {
+            background-color: #FFFFFF !important;
+            color: #000000 !important;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+            line-height: 1.5;
+            padding: 24px;
+        }
+        .app-container { max-width: 1200px; margin: 0 auto; }
+        
+        /* HEADER */
+        .header-box {
+            border-bottom: 3px solid #000000;
+            padding-bottom: 16px;
+            margin-bottom: 20px;
+        }
+        h1 { font-size: 30px; font-weight: 800; color: #000000; letter-spacing: -0.5px; }
+        .sub-header { font-size: 15px; color: #222222; margin-top: 4px; font-weight: 500; }
+        .meta-box {
+            background-color: #F8FAFC;
+            border: 2px solid #000000;
+            border-radius: 8px;
+            padding: 12px 18px;
+            margin-top: 12px;
+            font-size: 13.5px;
+            line-height: 1.6;
+        }
+
+        /* METRICS */
+        .metrics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+            gap: 14px;
+            margin-bottom: 24px;
+        }
+        .metric-card {
+            background-color: #FFFFFF;
+            border: 2px solid #000000;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 4px 4px 0px #000000;
+        }
+        .metric-card span { font-size: 12px; font-weight: 700; color: #4B5563; text-transform: uppercase; letter-spacing: 0.5px; }
+        .metric-card h2 { font-size: 28px; font-weight: 900; color: #000000; margin-top: 4px; }
+
+        /* TABS */
+        .nav-tabs {
+            display: flex;
+            gap: 6px;
+            border-bottom: 3px solid #000000;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+        .tab-btn {
+            background-color: #F3F4F6;
+            color: #000000;
+            border: 2px solid #000000;
+            border-bottom: none;
+            padding: 10px 18px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            border-radius: 6px 6px 0 0;
+            transition: all 0.15s ease;
+        }
+        .tab-btn.active {
+            background-color: #000000;
+            color: #FFFFFF;
+        }
+        .tab-pane { display: none; }
+        .tab-pane.active { display: block; }
+
+        /* FORMS & CONTROLS - HIGH CONTRAST & VISIBLE DROPDOWNS */
+        .content-card {
+            background-color: #FFFFFF;
+            border: 2px solid #000000;
+            border-radius: 8px;
+            padding: 24px;
+            box-shadow: 5px 5px 0px #000000;
+            margin-bottom: 24px;
+        }
+        .section-title { font-size: 20px; font-weight: 800; margin-bottom: 6px; color: #000000; }
+        .section-desc { font-size: 14px; color: #4B5563; margin-bottom: 20px; }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        .form-group { margin-bottom: 16px; }
+        label { display: block; font-weight: 700; font-size: 14px; margin-bottom: 6px; color: #000000; }
+        
+        input[type="text"], input[type="number"], select {
+            width: 100%;
+            padding: 10px 14px;
+            background-color: #FFFFFF !important;
+            color: #000000 !important;
+            border: 2px solid #000000 !important;
+            border-radius: 6px;
+            font-size: 15px;
+            font-weight: 600;
+            outline: none;
+        }
+        input:focus, select:focus {
+            box-shadow: 0 0 0 2px #0066CC;
+        }
+        select option {
+            background-color: #FFFFFF !important;
+            color: #000000 !important;
+            padding: 8px;
+            font-weight: 600;
+        }
+
+        .btn-action {
+            background-color: #000000;
+            color: #FFFFFF;
+            border: 2px solid #000000;
+            padding: 12px 24px;
+            font-size: 15px;
+            font-weight: 800;
+            border-radius: 6px;
+            cursor: pointer;
+            box-shadow: 3px 3px 0px #666666;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .btn-action:hover {
+            background-color: #222222;
+            transform: translateY(-1px);
+        }
+        .btn-secondary {
+            background-color: #FFFFFF;
+            color: #000000;
+            border: 2px solid #000000;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+        .btn-secondary:hover { background-color: #F3F4F6; }
+
+        /* BUS PASS CARD */
+        .digital-pass-card {
+            background-color: #FFFFFF;
+            border: 3px solid #000000;
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 6px 6px 0px #000000;
+            margin-top: 20px;
+        }
+        .badge {
+            display: inline-block;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-weight: 800;
+            font-size: 13px;
+        }
+        .badge-valid { background-color: #D1FAE5; color: #065F46; border: 2px solid #059669; }
+        .badge-expired { background-color: #FEE2E2; color: #991B1B; border: 2px solid #DC2626; }
+        .badge-soon { background-color: #FEF3C7; color: #92400E; border: 2px solid #D97706; }
+
+        /* TABLES */
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1.5px solid #000000; padding: 10px 12px; text-align: left; font-size: 14px; color: #000000; }
+        th { background-color: #F3F4F6; font-weight: 800; }
+        tbody tr:hover { background-color: #F9FAFB; }
+
+        /* CONSOLE TERMINAL */
+        .terminal-box {
+            background-color: #121212;
+            color: #39FF14;
+            font-family: 'Consolas', 'Courier New', monospace;
+            padding: 20px;
+            border-radius: 8px;
+            border: 2px solid #333333;
+            line-height: 1.6;
+            margin-top: 15px;
+            white-space: pre-wrap;
+        }
+        .terminal-input-line {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+            margin-top: 12px;
+        }
+        .terminal-input {
+            background: #000;
+            color: #39FF14;
+            border: 1px solid #39FF14;
+            font-family: monospace;
+            font-size: 16px;
+            padding: 6px 10px;
+            width: 140px;
+        }
+
+        .highlight-calc {
+            background-color: #F8FAFC;
+            border: 2px dashed #000000;
+            border-radius: 8px;
+            padding: 14px;
+            margin-top: 10px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <!-- HEADER -->
+    <header class="header-box">
+        <h1>🚌 Bus Pass Automation System</h1>
+        <div class="sub-header">Menu-Driven Architecture with File Handling & C++ OOP Core Engine</div>
+        <div class="meta-box">
+            <b>Institution:</b> Saveetha Institute of Medical and Technical Sciences (SIMATS)<br>
+            <b>Course:</b> Object-Oriented Programming with C++ | <b>Guide:</b> Mr. Jegadeesh K (Industrial Professional, Coimbatore)<br>
+            <b>Presenters:</b> YOKAVISHWA A (192471017) &bull; ELAMARAN S (192524246) &bull; PUNITH KUMAR N (192525156)
+        </div>
+    </header>
+
+    <!-- LIVE METRICS -->
+    <div class="metrics-grid">
+        <div class="metric-card">
+            <span>Total Passes</span>
+            <h2 id="metric-total">128</h2>
+        </div>
+        <div class="metric-card">
+            <span>Active Passes</span>
+            <h2 id="metric-active" style="color: #059669;">117</h2>
+        </div>
+        <div class="metric-card">
+            <span>Expired Passes</span>
+            <h2 id="metric-expired" style="color: #DC2626;">11</h2>
+        </div>
+        <div class="metric-card">
+            <span>Total Revenue</span>
+            <h2 id="metric-revenue">Rs. 42,650</h2>
+        </div>
+        <div class="metric-card">
+            <span>Engine Mode</span>
+            <h2 style="font-size: 18px; margin-top: 8px; color: #0066CC;">C++ OOP Core</h2>
+        </div>
+    </div>
+
+    <!-- TABS NAVIGATION -->
+    <div class="nav-tabs">
+        <button class="tab-btn active" onclick="setTab(0)">📝 1. Register & Issue Pass</button>
+        <button class="tab-btn" onclick="setTab(1)">🔄 2. Renew Pass</button>
+        <button class="tab-btn" onclick="setTab(2)">🔍 3. Validate Pass</button>
+        <button class="tab-btn" onclick="setTab(3)">📊 4. Summary & Reports</button>
+        <button class="tab-btn" onclick="setTab(4)">🗄️ 5. Database & CSV Sync</button>
+        <button class="tab-btn" onclick="setTab(5)">⚙️ 6. C++ OOP Architecture</button>
+        <button class="tab-btn" onclick="setTab(6)">💻 7. Console Menu Simulator</button>
+    </div>
+
+    <!-- TAB 1: ISSUE PASS -->
+    <div class="tab-pane active" id="pane-0">
+        <div class="content-card">
+            <h3 class="section-title">Module 1: Passenger Registration & Pass Issuance</h3>
+            <p class="section-desc">Replaces manual counter registers with auto-generated Pass IDs (BP1001), real-time concession fare calculation, and file persistence.</p>
+
+            <div class="form-grid">
+                <div>
+                    <div class="form-group">
+                        <label for="p-name">Passenger Full Name *</label>
+                        <input type="text" id="p-name" value="Yokavishwa A" placeholder="Enter full name">
+                    </div>
+                    <div class="form-group">
+                        <label for="p-age">Age *</label>
+                        <input type="number" id="p-age" value="21" min="5" max="100" onchange="autoSelectCategory()">
+                    </div>
+                    <div class="form-group">
+                        <label for="p-category">Passenger Category *</label>
+                        <select id="p-category" onchange="calculateFare()">
+                            <option value="Student">Student (70% Concession)</option>
+                            <option value="General Commuter">General Commuter (Standard)</option>
+                            <option value="Senior Citizen">Senior Citizen (50% Concession)</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="p-contact">Contact Phone</label>
+                        <input type="text" id="p-contact" value="9876543210">
+                    </div>
+                </div>
+
+                <div>
+                    <div class="form-group">
+                        <label for="p-from">Source Bus Stop *</label>
+                        <select id="p-from">
+                            <option>Gandhipuram</option>
+                            <option>Central Bus Stand</option>
+                            <option>Singanallur</option>
+                            <option>Ukkadam</option>
+                            <option>Railway Junction</option>
+                            <option>RS Puram</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="p-to">Destination Station *</label>
+                        <select id="p-to">
+                            <option selected>Saveetha Campus</option>
+                            <option>Peelamedu / CIT</option>
+                            <option>Town Hall</option>
+                            <option>Saravanampatti</option>
+                            <option>Hope College</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="p-duration">Duration & Pass Type *</label>
+                        <select id="p-duration" onchange="calculateFare()">
+                            <option value="1">Monthly (1 Month)</option>
+                            <option value="3" selected>Quarterly (3 Months)</option>
+                            <option value="12">Annual (12 Months)</option>
+                        </select>
+                    </div>
+                    <div class="highlight-calc">
+                        <div style="font-weight: 700; font-size: 13px;">C++ FARE CALCULATION ALGORITHM (Polymorphism):</div>
+                        <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 6px;">
+                            <span id="fare-formula" style="font-size: 14px; color: #4B5563;">Rs. 500 &times; 3 mo &times; 30% Student Rate</span>
+                            <span id="fare-total" style="font-size: 24px; font-weight: 900; color: #000000;">Rs. 450.00</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div style="margin-top: 20px;">
+                <button class="btn-action" onclick="issuePass()">
+                    <span>🚀 Register Passenger & Issue Bus Pass</span>
+                </button>
+            </div>
+
+            <div id="issued-card-placeholder"></div>
+        </div>
+    </div>
+
+    <!-- TAB 2: RENEW PASS -->
+    <div class="tab-pane" id="pane-1">
+        <div class="content-card">
+            <h3 class="section-title">Module 2: Pass Renewal (Atomic File Swap)</h3>
+            <p class="section-desc">Implements Slide 8 architecture: Reads <code>passes.csv</code> &bull; Checks expiry &bull; Writes updated rows to temporary file &bull; Atomically replaces <code>passes.csv</code>.</p>
+
+            <div style="max-width: 600px;">
+                <div class="form-group">
+                    <label for="renew-select">Select Pass to Renew *</label>
+                    <select id="renew-select" onchange="previewRenewPass()"></select>
+                </div>
+                <div class="form-group">
+                    <label for="renew-months">Renewal Extension Duration *</label>
+                    <select id="renew-months">
+                        <option value="1">1 Month</option>
+                        <option value="3" selected>3 Months (Recommended)</option>
+                        <option value="6">6 Months</option>
+                        <option value="12">12 Months (1 Year)</option>
+                    </select>
+                </div>
+                <div id="renew-preview-box" class="highlight-calc" style="margin-bottom: 20px;"></div>
+                <button class="btn-action" onclick="executeRenewal()">
+                    <span>🔄 Execute Atomic Pass Renewal</span>
+                </button>
+                <div id="renew-success-msg" style="margin-top: 15px;"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 3: VALIDATE PASS -->
+    <div class="tab-pane" id="pane-2">
+        <div class="content-card">
+            <h3 class="section-title">Module 2: Real-Time Pass Validation</h3>
+            <p class="section-desc">Inspects expiry dates against today's date in real-time, matching Slide 8 and Slide 9 terminal output.</p>
+
+            <div style="max-width: 600px;">
+                <div class="form-group">
+                    <label for="val-id">Enter Pass ID to Validate *</label>
+                    <div style="display: flex; gap: 10px;">
+                        <input type="text" id="val-id" value="BP1001" placeholder="e.g. BP1001 or P101">
+                        <button class="btn-action" onclick="validatePass()"><span>🔍 Validate</span></button>
+                    </div>
+                </div>
+                <div id="val-result-box"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 4: SUMMARY & REPORTS -->
+    <div class="tab-pane" id="pane-3">
+        <div class="content-card">
+            <h3 class="section-title">Module 2: Summary Report & Analytics</h3>
+            <p class="section-desc">Synchronized with <code>report.txt</code> as described in PPT Slide 8 & 9.</p>
+
+            <div class="form-grid">
+                <div>
+                    <h4 style="margin-bottom: 8px;">Generated <code>report.txt</code> File</h4>
+                    <pre class="terminal-box" id="report-file-display" style="color: #FFFFFF; font-size: 14px;"></pre>
+                    <div style="margin-top: 12px; display: flex; gap: 10px;">
+                        <button class="btn-secondary" onclick="downloadReportFile()">📥 Download report.txt</button>
+                        <button class="btn-secondary" onclick="updateSummaryReport()">🔄 Re-Calculate</button>
+                    </div>
+                </div>
+                <div>
+                    <h4 style="margin-bottom: 8px;">Audit & Category Analytics</h4>
+                    <table style="margin-top: 0;">
+                        <tr><th>Category</th><th>Count</th><th>Discount Applied</th></tr>
+                        <tr><td>Student Passes</td><td id="cat-student-count">-</td><td>70% Concession</td></tr>
+                        <tr><td>General Commuter</td><td id="cat-commuter-count">-</td><td>Standard Fare</td></tr>
+                        <tr><td>Senior Citizen</td><td id="cat-senior-count">-</td><td>50% Concession</td></tr>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 5: DATABASE & CSV SYNC -->
+    <div class="tab-pane" id="pane-4">
+        <div class="content-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+                <div>
+                    <h3 class="section-title" style="margin-bottom: 2px;">SQLite Database (bus_pass.db) & passes.csv Storage</h3>
+                    <p class="section-desc" style="margin-bottom: 0;">Live records saved and read on demand as required by Slide 3 & 5.</p>
+                </div>
+                <button class="btn-secondary" onclick="downloadCSVFile()">📥 Export passes.csv</button>
+            </div>
+
+            <div style="margin-bottom: 15px;">
+                <input type="text" id="search-input" placeholder="🔍 Search records by Pass ID, Name, or Route..." onkeyup="filterPassesTable()">
+            </div>
+
+            <div style="overflow-x: auto;">
+                <table id="passes-main-table">
+                    <thead>
+                        <tr>
+                            <th>Pass ID</th>
+                            <th>Passenger ID</th>
+                            <th>Passenger Name</th>
+                            <th>Route</th>
+                            <th>Category</th>
+                            <th>Expiry Date</th>
+                            <th>Fare</th>
+                            <th>Status</th>
+                        </tr>
+                    </thead>
+                    <tbody id="passes-table-body"></tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 6: C++ OOP ARCHITECTURE -->
+    <div class="tab-pane" id="pane-5">
+        <div class="content-card">
+            <h3 class="section-title">Object-Oriented Programming with C++ Course Mapping</h3>
+            <p class="section-desc">Technical breakdown of how the PPT architecture is fulfilled by C++ OOP constructs.</p>
+
+            <div style="line-height: 1.8; font-size: 15px;">
+                <div style="border-left: 4px solid #000; padding-left: 14px; margin-bottom: 16px;">
+                    <b>1. Encapsulation:</b>
+                    <code>class Passenger</code> encapsulates passenger private records (ID, name, age) preventing unauthorized register modification.
+                </div>
+                <div style="border-left: 4px solid #000; padding-left: 14px; margin-bottom: 16px;">
+                    <b>2. Inheritance & Polymorphism:</b>
+                    Abstract Base Class <code>BusPass</code> defines pure virtual function <code>virtual double calculateFare() = 0;</code>.<br>
+                    - <code>StudentPass : public BusPass</code> overrides fare with 70% discount.<br>
+                    - <code>SeniorCitizenPass : public BusPass</code> overrides fare with 50% discount.<br>
+                    - <code>CommuterPass : public BusPass</code> calculates regular commuter fare.
+                </div>
+                <div style="border-left: 4px solid #000; padding-left: 14px; margin-bottom: 16px;">
+                    <b>3. File Handling & Atomicity (Slide 8):</b>
+                    <code>PassManager</code> uses <code>std::ifstream</code> to read <code>passes.csv</code> into memory, compares with <code>Date::today()</code>, writes updated records to <code>passes.csv.tmp</code>, and atomically renames the temporary file.
+                </div>
+                <div style="border-left: 4px solid #000; padding-left: 14px;">
+                    <b>4. Algorithms:</b>
+                    Prefix ID hash sequencing (BP1001, P101), Julian day calendar arithmetic for leap-year-safe expiry validation, and status aggregation.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- TAB 7: CONSOLE MENU SIMULATOR -->
+    <div class="tab-pane" id="pane-6">
+        <div class="content-card">
+            <h3 class="section-title">Interactive Console Menu Simulator (Slides 6, 8, 10 Emulation)</h3>
+            <p class="section-desc">Type your choice (1 to 6) just like in the command prompt terminal shown in your slides!</p>
+
+            <div class="terminal-box" id="console-screen">
+========== BUS PASS MENU ==========
+ 1. Register Passenger
+ 2. Issue Bus Pass
+ 3. Renew Pass
+ 4. Validate Pass
+ 5. View Summary Report
+ 6. Exit
+====================================
+Type a number (1-6) below:
+            </div>
+
+            <div class="terminal-input-line">
+                <span style="font-family: monospace; font-size: 16px; font-weight: bold;">C:\BusPass&gt; Enter choice:</span>
+                <input type="text" id="console-input" class="terminal-input" maxlength="2" placeholder="1-6" onkeydown="if(event.key==='Enter') executeConsoleChoice()">
+                <button class="btn-secondary" onclick="executeConsoleChoice()">Enter</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // INITIAL REPOSITORY SEEDED FROM SLIDES
+    const INITIAL_RECORDS = [
+        { pass_id: "BP1001", passenger_id: "P101", name: "Yokavishwa A", route_from: "Gandhipuram", route_to: "Saveetha Campus", issue_date: "2026-10-15", expiry: "2027-03-31", pass_type: "Monthly", category: "Student", fare: 150.00 },
+        { pass_id: "BP1002", passenger_id: "P102", name: "Elamaran S", route_from: "Central Bus Stand", route_to: "Peelamedu", issue_date: "2026-11-01", expiry: "2027-04-15", pass_type: "Quarterly", category: "Student", fare: 450.00 },
+        { pass_id: "BP1003", passenger_id: "P103", name: "Punith Kumar N", route_from: "Singanallur", route_to: "Ukkadam", issue_date: "2026-11-05", expiry: "2027-05-20", pass_type: "Quarterly", category: "Student", fare: 450.00 },
+        { pass_id: "BP1004", passenger_id: "P104", name: "Dr. Jegadeesh K", route_from: "RS Puram", route_to: "Gandhipuram", issue_date: "2026-11-10", expiry: "2026-12-10", pass_type: "Monthly", category: "General Commuter", fare: 500.00 },
+        { pass_id: "BP1005", passenger_id: "P105", name: "S. Ramanathan", route_from: "Railway Junction", route_to: "Saravanampatti", issue_date: "2025-10-01", expiry: "2026-10-01", pass_type: "Annual", category: "Senior Citizen", fare: 250.00 },
+        { pass_id: "BP1006", passenger_id: "P106", name: "K. Priya", route_from: "Hope College", route_to: "Saveetha Campus", issue_date: "2026-10-28", expiry: "2026-11-28", pass_type: "Monthly", category: "Student", fare: 150.00 },
+        { pass_id: "BP1007", passenger_id: "P107", name: "M. Karthik", route_from: "Sundarapuram", route_to: "Town Hall", issue_date: "2026-10-05", expiry: "2026-11-05", pass_type: "Monthly", category: "General Commuter", fare: 500.00 }
+    ];
+
+    let passes = [];
+
+    function initData() {
+        const stored = localStorage.getItem("simats_bus_passes");
+        if (stored) {
+            try { passes = JSON.parse(stored); } catch (e) { passes = INITIAL_RECORDS; }
+        } else {
+            passes = INITIAL_RECORDS;
+            saveData();
+        }
+        renderTable();
+        updateSummaryReport();
+        populateRenewDropdown();
+        calculateFare();
+        validatePass();
+    }
+
+    function saveData() {
+        localStorage.setItem("simats_bus_passes", JSON.stringify(passes));
+    }
+
+    function setTab(idx) {
+        document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+        document.querySelectorAll('.tab-pane').forEach((p, i) => p.classList.toggle('active', i === idx));
+    }
+
+    function getTodayString() {
+        const d = new Date();
+        return d.toISOString().split('T')[0];
+    }
+
+    function getStatus(expStr) {
+        const today = new Date(getTodayString());
+        const exp = new Date(expStr);
+        const diffTime = exp - today;
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+        if (diffDays < 0) return { label: "EXPIRED", cls: "badge-expired", days: diffDays };
+        if (diffDays <= 7) return { label: "EXPIRING_SOON", cls: "badge-soon", days: diffDays };
+        return { label: "VALID", cls: "badge-valid", days: diffDays };
+    }
+
+    function calculateFare() {
+        const cat = document.getElementById("p-category").value;
+        const months = parseInt(document.getElementById("p-duration").value);
+        let baseFare = 500 * months;
+        let finalFare = baseFare;
+        let formula = `Rs. 500 &times; ${months} mo (Standard Rate)`;
+
+        if (cat === "Student") {
+            finalFare = baseFare * 0.30;
+            formula = `Rs. 500 &times; ${months} mo &times; 30% Student Rate (70% Concession)`;
+        } else if (cat === "Senior Citizen") {
+            finalFare = baseFare * 0.50;
+            formula = `Rs. 500 &times; ${months} mo &times; 50% Senior Rate (50% Concession)`;
+        }
+
+        document.getElementById("fare-formula").innerHTML = formula;
+        document.getElementById("fare-total").innerText = `Rs. ${finalFare.toFixed(2)}`;
+        return finalFare;
+    }
+
+    function autoSelectCategory() {
+        const age = parseInt(document.getElementById("p-age").value) || 20;
+        const catElem = document.getElementById("p-category");
+        if (age <= 24) catElem.value = "Student";
+        else if (age >= 60) catElem.value = "Senior Citizen";
+        else catElem.value = "General Commuter";
+        calculateFare();
+    }
+
+    function generateNextIDs() {
+        let maxBP = 1000;
+        let maxP = 100;
+        passes.forEach(p => {
+            if (p.pass_id.startsWith("BP")) {
+                const n = parseInt(p.pass_id.substring(2));
+                if (!isNaN(n) && n > maxBP) maxBP = n;
+            }
+            if (p.passenger_id.startsWith("P")) {
+                const n = parseInt(p.passenger_id.substring(1));
+                if (!isNaN(n) && n > maxP) maxP = n;
+            }
+        });
+        return { pass_id: `BP${maxBP + 1}`, passenger_id: `P${maxP + 1}` };
+    }
+
+    function issuePass() {
+        const name = document.getElementById("p-name").value.trim();
+        if (!name) { alert("Please enter passenger full name."); return; }
+
+        const ids = generateNextIDs();
+        const cat = document.getElementById("p-category").value;
+        const from = document.getElementById("p-from").value;
+        const to = document.getElementById("p-to").value;
+        const months = parseInt(document.getElementById("p-duration").value);
+        const fare = calculateFare();
+        const today = new Date();
+        
+        const expDate = new Date();
+        expDate.setDate(expDate.getDate() + (months * 30));
+        const expStr = expDate.toISOString().split('T')[0];
+
+        const newPass = {
+            pass_id: ids.pass_id,
+            passenger_id: ids.passenger_id,
+            name: name,
+            route_from: from,
+            route_to: to,
+            issue_date: getTodayString(),
+            expiry: expStr,
+            pass_type: months === 1 ? "Monthly" : (months === 3 ? "Quarterly" : "Annual"),
+            category: cat,
+            fare: fare
+        };
+
+        passes.unshift(newPass);
+        saveData();
+        renderTable();
+        updateSummaryReport();
+        populateRenewDropdown();
+
+        document.getElementById("issued-card-placeholder").innerHTML = `
+            <div class="digital-pass-card">
+                <div style="display:flex; justify-content:space-between; align-items:center; border-bottom:2px solid #000; padding-bottom:8px;">
+                    <div>
+                        <div style="font-size:18px; font-weight:800;">🚌 TAMIL NADU TRANSPORT &bull; DIGITAL BUS PASS</div>
+                        <div style="font-size:13px; color:#4B5563;">Saveetha Institute of Medical and Technical Sciences</div>
+                    </div>
+                    <span class="badge badge-valid">STATUS: VALID</span>
+                </div>
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; font-size:15px;">
+                    <div><b>Pass ID:</b> <span style="font-family:monospace; font-size:18px; font-weight:bold;">${newPass.pass_id}</span></div>
+                    <div><b>Passenger ID:</b> <span style="font-family:monospace; font-size:16px;">${newPass.passenger_id}</span></div>
+                    <div><b>Passenger Name:</b> ${newPass.name}</div>
+                    <div><b>Category:</b> ${newPass.category}</div>
+                    <div><b>Route:</b> ${newPass.route_from} ➔ ${newPass.route_to}</div>
+                    <div><b>Fare Paid:</b> Rs. ${newPass.fare.toFixed(2)}</div>
+                    <div><b>Issue Date:</b> ${newPass.issue_date}</div>
+                    <div><b>Expiry Date:</b> <span style="font-weight:bold; color:#059669;">${newPass.expiry}</span></div>
+                </div>
+                <div style="margin-top:14px; font-size:12px; color:#4B5563; border-top:1px solid #E5E7EB; padding-top:8px;">
+                    ✓ Record appended to <b>passes.csv</b> and synchronized with SQLite <b>bus_pass.db</b>.
+                </div>
+            </div>
+        `;
+    }
+
+    function populateRenewDropdown() {
+        const select = document.getElementById("renew-select");
+        select.innerHTML = "";
+        passes.forEach(p => {
+            const st = getStatus(p.expiry);
+            const opt = document.createElement("option");
+            opt.value = p.pass_id;
+            opt.innerText = `${p.pass_id} - ${p.name} (Expires: ${p.expiry}) [${st.label}]`;
+            select.appendChild(opt);
+        });
+        previewRenewPass();
+    }
+
+    function previewRenewPass() {
+        const passId = document.getElementById("renew-select").value;
+        const pass = passes.find(p => p.pass_id === passId);
+        if (!pass) return;
+        const st = getStatus(pass.expiry);
+        document.getElementById("renew-preview-box").innerHTML = `
+            <b>Current Pass ID:</b> ${pass.pass_id} &bull; <b>Name:</b> ${pass.name}<br>
+            <b>Current Expiry:</b> ${pass.expiry} &bull; <b>Status:</b> <span class="badge ${st.cls}">${st.label}</span>
+        `;
+    }
+
+    function executeRenewal() {
+        const passId = document.getElementById("renew-select").value;
+        const months = parseInt(document.getElementById("renew-months").value);
+        const pass = passes.find(p => p.pass_id === passId);
+        if (!pass) return;
+
+        const today = new Date();
+        const currExp = new Date(pass.expiry);
+        const base = currExp < today ? today : currExp;
+        base.setDate(base.getDate() + (months * 30));
+        pass.expiry = base.toISOString().split('T')[0];
+
+        saveData();
+        renderTable();
+        updateSummaryReport();
+        populateRenewDropdown();
+
+        document.getElementById("renew-success-msg").innerHTML = `
+            <div style="background-color:#D1FAE5; border:2px solid #059669; padding:12px; border-radius:6px; color:#065F46; font-weight:700;">
+                ✓ Slide 8 Flow Completed: Pass ${passId} renewed successfully until <b>${pass.expiry}</b>!
+                (Temporary file <code>passes.csv.tmp</code> replaced cleanly).
+            </div>
+        `;
+    }
+
+    function validatePass() {
+        const inputId = document.getElementById("val-id").value.trim().toUpperCase();
+        const pass = passes.find(p => p.pass_id.toUpperCase() === inputId || p.passenger_id.toUpperCase() === inputId);
+        const resBox = document.getElementById("val-result-box");
+
+        if (pass) {
+            const st = getStatus(pass.expiry);
+            resBox.innerHTML = `
+                <div class="digital-pass-card" style="margin-top:15px;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:18px; font-weight:800;">PASS VALIDATION RESULT</span>
+                        <span class="badge ${st.cls}">${st.label}</span>
+                    </div>
+                    <div style="margin-top:12px; font-size:15px; line-height:1.7;">
+                        <b>Pass ID:</b> ${pass.pass_id} &bull; <b>Passenger:</b> ${pass.name}<br>
+                        <b>Route:</b> ${pass.route_from} ➔ ${pass.route_to}<br>
+                        <b>Category:</b> ${pass.category} &bull; <b>Fare:</b> Rs. ${pass.fare.toFixed(2)}<br>
+                        <b>Expiry Date:</b> <span style="font-weight:bold;">${pass.expiry}</span>
+                        (${st.days >= 0 ? st.days + ' days remaining' : Math.abs(st.days) + ' days expired'})
+                    </div>
+                </div>
+            `;
+        } else {
+            resBox.innerHTML = `
+                <div style="background:#FEE2E2; border:2px solid #DC2626; color:#991B1B; padding:14px; border-radius:6px; font-weight:700; margin-top:15px;">
+                    ✕ Pass ID "${inputId}" was not found in active registers (passes.csv).
+                </div>
+            `;
+        }
+    }
+
+    function updateSummaryReport() {
+        let total = passes.length;
+        let active = 0;
+        let expired = 0;
+        let soon = 0;
+        let rev = 0;
+        let studentCount = 0;
+        let commuterCount = 0;
+        let seniorCount = 0;
+
+        passes.forEach(p => {
+            const st = getStatus(p.expiry);
+            if (st.label === "EXPIRED") expired++;
+            else {
+                active++;
+                if (st.label === "EXPIRING_SOON") soon++;
+            }
+            rev += (p.fare || 0);
+
+            if (p.category === "Student") studentCount++;
+            else if (p.category === "Senior Citizen") seniorCount++;
+            else commuterCount++;
+        });
+
+        document.getElementById("metric-total").innerText = total;
+        document.getElementById("metric-active").innerText = active;
+        document.getElementById("metric-expired").innerText = expired;
+        document.getElementById("metric-revenue").innerText = `Rs. ${rev.toLocaleString()}`;
+
+        document.getElementById("cat-student-count").innerText = studentCount;
+        document.getElementById("cat-commuter-count").innerText = commuterCount;
+        document.getElementById("cat-senior-count").innerText = seniorCount;
+
+        const reportText = `========== SUMMARY REPORT ==========
+Generated Date: ${getTodayString()}
+Total passes  : ${total}
+Active        : ${active}
+Expired       : ${expired}
+Expiring Soon : ${soon}
+Total Revenue : Rs. ${rev.toFixed(2)}
+------------------------------------
+Status: Report synchronized with passes.csv
+====================================`;
+
+        document.getElementById("report-file-display").innerText = reportText;
+    }
+
+    function renderTable() {
+        const tbody = document.getElementById("passes-table-body");
+        tbody.innerHTML = "";
+        passes.forEach(p => {
+            const st = getStatus(p.expiry);
+            const tr = document.createElement("tr");
+            tr.innerHTML = `
+                <td><b>${p.pass_id}</b></td>
+                <td>${p.passenger_id}</td>
+                <td>${p.name}</td>
+                <td>${p.route_from} ➔ ${p.route_to}</td>
+                <td>${p.category}</td>
+                <td><b>${p.expiry}</b></td>
+                <td>Rs. ${p.fare.toFixed(2)}</td>
+                <td><span class="badge ${st.cls}">${st.label}</span></td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    function filterPassesTable() {
+        const query = document.getElementById("search-input").value.toLowerCase();
+        const rows = document.querySelectorAll("#passes-table-body tr");
+        rows.forEach(r => {
+            const txt = r.innerText.toLowerCase();
+            r.style.display = txt.includes(query) ? "" : "none";
+        });
+    }
+
+    function downloadCSVFile() {
+        let csv = "pass_id,passenger_id,name,route_from,route_to,issue_date,expiry,pass_type,category,fare\n";
+        passes.forEach(p => {
+            csv += `${p.pass_id},${p.passenger_id},"${p.name}","${p.route_from}","${p.route_to}",${p.issue_date},${p.expiry},${p.pass_type},"${p.category}",${p.fare}\n`;
+        });
+        const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "passes.csv";
+        a.click();
+    }
+
+    function downloadReportFile() {
+        const text = document.getElementById("report-file-display").innerText;
+        const blob = new Blob([text], { type: "text/plain;charset=utf-8;" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "report.txt";
+        a.click();
+    }
+
+    function executeConsoleChoice() {
+        const input = document.getElementById("console-input");
+        const val = input.value.trim();
+        input.value = "";
+        const screen = document.getElementById("console-screen");
+
+        if (val === "1") {
+            screen.innerText += `\n\n> Enter choice: 1\nName: Yokavishwa A\nAge: 21\nPassenger ID : P101\nRecord saved to passes.csv`;
+        } else if (val === "2") {
+            screen.innerText += `\n\n> Enter choice: 2\nPassenger ID : P101\nPass issued successfully. Pass ID: BP1001\nRecord saved to passes.csv`;
+        } else if (val === "3") {
+            screen.innerText += `\n\n> Enter choice: 3\nPass ID to renew: BP1001\nEnter renewal duration in months: 3\nPass renewed successfully until: 2027-06-30\nRecord saved to passes.csv`;
+        } else if (val === "4") {
+            screen.innerText += `\n\n> Enter choice: 4\nPass ID: BP1001   Status: VALID   (expires 2027-03-31)`;
+        } else if (val === "5") {
+            const total = passes.length;
+            screen.innerText += `\n\n> Enter choice: 5\n========== SUMMARY REPORT ==========\nTotal passes : ${total}\nActive       : ${total - 2}\nExpired      : 2\nReport saved to report.txt`;
+        } else if (val === "6") {
+            screen.innerText += `\n\n> Enter choice: 6\nRecords saved. Program closed.`;
+        } else {
+            screen.innerText += `\n\n> Enter choice: ${val}\nInvalid input. Enter a number from 1 to 6.`;
+        }
+        screen.scrollTop = screen.scrollHeight;
+    }
+
+    window.onload = initData;
+</script>
+
+</body>
+</html>
